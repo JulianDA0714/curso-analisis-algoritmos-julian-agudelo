@@ -20,3 +20,11 @@ git clone https://github.com/JulianDA0714/curso-analisis-algoritmos-julian-agude
 
 - **Nombre:** Julián David Agudelo Acevedo
 - **GitHub:** JulianDA0714
+
+## Semestre
+
+2026-2
+
+## Contacto
+
+Correo institucional: julianagudelo323958@correo.itm.edu.co
