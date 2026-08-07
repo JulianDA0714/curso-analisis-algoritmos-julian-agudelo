@@ -19,6 +19,7 @@ git clone https://github.com/JulianDA0714/curso-analisis-algoritmos-julian-agude
 ## Contacto
 
 - **Profesor:** Santiago Suárez Cortes
+- **Correo:** santiagosuarez9056@correo.itm.edu.co
 
 ## Autor
 
