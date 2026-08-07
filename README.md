@@ -16,6 +16,10 @@ Para clonar este repositorio ejecute:
 git clone https://github.com/JulianDA0714/curso-analisis-algoritmos-julian-agudelo.git
 ```
 
+## Contacto
+
+- **Profesor:** Santiago Suárez Cortes
+
 ## Autor
 
 - **Nombre:** Julián David Agudelo Acevedo
