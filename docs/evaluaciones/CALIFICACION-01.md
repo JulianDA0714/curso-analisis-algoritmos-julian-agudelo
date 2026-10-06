@@ -45,7 +45,7 @@
 **Lo que puede mejorar:**
 - Los docstrings no siguen el estilo Google (faltan las secciones `Args` y `Returns`) y los de `datos.py` tampoco describen los parámetros.
 - Las funciones de `parte3_casos.py` y `parte4_complejidad.py` no tienen docstring ni *type hints*.
-- Faltan líneas en blanco entre funciones y el salto de línea al final de los archivos (PEP 8).
+- Faltan líneas en blanco entre funciones (PEP 8).
 
 ## 4. Calidad del análisis de las gráficas (18 / 20)
 **Lo que hizo bien:**
