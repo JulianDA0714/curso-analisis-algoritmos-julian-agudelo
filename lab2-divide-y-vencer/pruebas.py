@@ -3,7 +3,8 @@ import random
 from subarreglo import subarreglo_fuerza_bruta, subarreglo_maximo
 
 
-def probar_serie_ejemplo():
+def probar_serie_ejemplo() -> None:
+    """Verifica el ejemplo principal indicado en la guía."""
     valores = [-3, 5, -2, 8, -6, 3, 9, -4]
 
     fuerza_bruta = subarreglo_fuerza_bruta(valores)
@@ -13,21 +14,24 @@ def probar_serie_ejemplo():
     assert divide_venceras[2] == 17
 
 
-def probar_un_elemento():
+def probar_un_elemento() -> None:
+    """Verifica una lista que contiene un solo elemento."""
     valores = [8]
 
     assert subarreglo_fuerza_bruta(valores)[2] == 8
     assert subarreglo_maximo(valores, 0, 0)[2] == 8
 
 
-def probar_todos_negativos():
+def probar_todos_negativos() -> None:
+    """Verifica una lista donde todos los valores son negativos."""
     valores = [-8, -3, -10, -2, -6]
 
     assert subarreglo_fuerza_bruta(valores)[2] == -2
     assert subarreglo_maximo(valores, 0, len(valores) - 1)[2] == -2
 
 
-def probar_todos_positivos():
+def probar_todos_positivos() -> None:
+    """Verifica una lista donde todos los valores son positivos."""
     valores = [2, 4, 1, 5, 3]
     suma_esperada = 15
 
@@ -38,7 +42,8 @@ def probar_todos_positivos():
     )
 
 
-def probar_caso_cruzado():
+def probar_caso_cruzado() -> None:
+    """Verifica un máximo que cruza el punto medio de la lista."""
     valores = [-4, 6, 3, -2, 5, -8]
 
     fuerza_bruta = subarreglo_fuerza_bruta(valores)
@@ -48,7 +53,8 @@ def probar_caso_cruzado():
     assert divide_venceras[2] == 12
 
 
-def probar_listas_aleatorias():
+def probar_listas_aleatorias() -> None:
+    """Compara ambos algoritmos usando 20 listas aleatorias."""
     random.seed(42)
 
     for _ in range(20):
@@ -63,7 +69,8 @@ def probar_listas_aleatorias():
         assert fuerza_bruta[2] == divide_venceras[2]
 
 
-def main():
+def main() -> None:
+    """Ejecuta todas las pruebas del laboratorio."""
     probar_serie_ejemplo()
     probar_un_elemento()
     probar_todos_negativos()

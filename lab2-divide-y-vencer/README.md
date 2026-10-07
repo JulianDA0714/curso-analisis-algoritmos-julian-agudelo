@@ -6,10 +6,24 @@
 
 El laboratorio está en la carpeta `lab2-divide-y-vencer`.
 
-Primero se activa el entorno virtual desde la raíz del repositorio:
+Primero se activa el entorno virtual desde la raíz del repositorio.
+
+En Windows usando Git Bash:
 
 ```bash
 source venv/Scripts/activate
+```
+
+En Windows usando PowerShell:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+En macOS o Linux:
+
+```bash
+source venv/bin/activate
 ```
 
 Después se entra a la carpeta:
@@ -60,19 +74,19 @@ Todas las pruebas pasaron correctamente.
 
 El código de esta parte está en [`medicion.py`](medicion.py).
 
-Se probaron siete tamaños: **10, 50, 100, 500, 1000, 4000 y 8000** elementos. Los valores se generaron entre -100 y 100 con una semilla fija, usando la misma lista para los dos algoritmos en cada tamaño.
+Se probaron siete tamaños: **10, 50, 100, 500, 1000, 4000 y 8000** elementos. Los valores se generaron entre -100 y 100 usando un generador inicializado con la semilla fija **42**. Para cada tamaño se utilizó exactamente la misma lista en los dos algoritmos.
 
-El tiempo se tomó con `time.perf_counter()` solamente durante la ejecución de cada algoritmo. No se incluyó la generación de los datos. Hice una medición por tamaño y también comprobé que las sumas de ambos algoritmos coincidieran.
+El tiempo se tomó con `time.perf_counter()` solamente durante la ejecución de cada algoritmo. No se incluyó la generación de los datos. Para reducir el efecto de variaciones de una sola ejecución, cada algoritmo se ejecutó **5 veces por tamaño** y se utilizó el tiempo promedio. También comprobé que las sumas obtenidas por ambos algoritmos coincidieran.
 
 | Tamaño | Fuerza bruta (s) | Divide y vencerás (s) |
 |---:|---:|---:|
-| 10 | 0,000013 | 0,000023 |
-| 50 | 0,000075 | 0,000079 |
-| 100 | 0,000394 | 0,000161 |
-| 500 | 0,006411 | 0,000760 |
-| 1.000 | 0,024806 | 0,001575 |
-| 4.000 | 0,394333 | 0,006711 |
-| 8.000 | 1,626822 | 0,014091 |
+| 10 | 0,000006 | 0,000012 |
+| 50 | 0,000068 | 0,000065 |
+| 100 | 0,000238 | 0,000138 |
+| 500 | 0,006404 | 0,000765 |
+| 1.000 | 0,024652 | 0,001598 |
+| 4.000 | 0,401170 | 0,007020 |
+| 8.000 | 1,973235 | 0,014414 |
 
 ![Tiempo de ejecución de ambos algoritmos](graficas/tiempo_vs_n.png)
 
@@ -98,17 +112,17 @@ En fuerza bruta se usan dos ciclos: uno escoge el inicio del tramo y el otro rec
 
 En la gráfica se nota que fuerza bruta empieza a crecer mucho más rápido. Divide y vencerás también aumenta su tiempo, pero la diferencia entre los dos se vuelve cada vez mayor.
 
-Por ejemplo, al pasar de **4.000 a 8.000 elementos**, fuerza bruta pasó de **0,394333** a **1,626822 segundos**. Eso significa que tardó unas **4,13 veces** más.
+Por ejemplo, al pasar de **4.000 a 8.000 elementos**, fuerza bruta pasó de **0,401170** a **1,973235 segundos**. Eso significa que tardó unas **4,92 veces** más.
 
-En divide y vencerás se pasó de **0,006711** a **0,014091 segundos**, aproximadamente **2,10 veces** más.
+En divide y vencerás se pasó de **0,007020** a **0,014414 segundos**, aproximadamente **2,05 veces** más.
 
-Esto se parece a lo esperado: con `Θ(n²)` duplicar el tamaño puede multiplicar el trabajo por cuatro, mientras que con `Θ(n log n)` el aumento es un poco mayor al doble.
+Esto mantiene la tendencia esperada: fuerza bruta crece mucho más rápido por su `Θ(n²)`, mientras que divide y vencerás queda cerca de duplicar su tiempo, como se espera de `Θ(n log n)`. Los valores no tienen que dar exactamente el factor teórico porque son tiempos medidos y pueden variar según la ejecución y el equipo.
 
 ## 3.3 Tamaños pequeños
 
-En mis pruebas divide y vencerás empezó a ganar desde los **100 elementos**. Con 10 elementos fuerza bruta fue un poco más rápida y con 50 los tiempos fueron casi iguales.
+En mis pruebas divide y vencerás empezó a mostrar ventaja desde los **50 elementos**, aunque en ese tamaño los tiempos todavía fueron prácticamente iguales: **0,000068 segundos** para fuerza bruta y **0,000065 segundos** para divide y vencerás.
 
-Esto puede pasar porque dividir la lista y hacer llamadas recursivas también tiene un costo. En listas pequeñas esa diferencia todavía no se aprovecha tanto, pero cuando aumenta la cantidad de datos sí se nota.
+Con 10 elementos fuerza bruta fue más rápida. Esto puede pasar porque dividir la lista y hacer llamadas recursivas también tiene un costo. En listas pequeñas ese trabajo adicional puede pesar más que la diferencia de complejidad, pero cuando aumenta la cantidad de datos la ventaja de divide y vencerás se hace mucho más clara.
 
 ## 3.4 ¿Siempre conviene dividir?
 
@@ -124,12 +138,12 @@ El costo de combinar es constante porque solamente se comparan dos valores. Ento
 
 ## 3.5 Recomendación para la cooperativa
 
-Para la cooperativa escogería **divide y vencerás** porque el equipo también quiere analizar series mucho más grandes. Con **8.000 elementos**, fuerza bruta tardó **1,626822 segundos**, mientras que divide y vencerás necesitó **0,014091 segundos**.
+Para la cooperativa escogería **divide y vencerás** porque el equipo también quiere analizar series mucho más grandes. Con **8.000 elementos**, fuerza bruta tardó en promedio **1,973235 segundos**, mientras que divide y vencerás necesitó **0,014414 segundos**.
 
 Para estimar qué pasaría con **1.000.000 de registros** tomé esos tiempos como referencia y apliqué el crecimiento de cada algoritmo. No es una medición real con un millón de datos.
 
-El tamaño aumenta **125 veces**. En fuerza bruta, por su crecimiento cuadrático, el factor sería `125²`. Eso daría aproximadamente **25.419 segundos**, es decir, **7,1 horas**.
+El tamaño aumenta **125 veces**. En fuerza bruta, por su crecimiento cuadrático, el factor sería `125²`. Eso daría aproximadamente **30.832 segundos**, es decir, **8,6 horas**.
 
-En divide y vencerás utilicé la proporción entre `1.000.000 log₂(1.000.000)` y `8.000 log₂(8.000)`. Con esa aproximación el tiempo sería de unos **2,7 segundos**.
+En divide y vencerás utilicé la proporción entre `1.000.000 log₂(1.000.000)` y `8.000 log₂(8.000)`. Con esa aproximación el tiempo sería de unos **2,77 segundos**.
 
 Por eso recomendaría divide y vencerás para este caso. Aunque con pocos datos la diferencia no es tan grande, las mediciones muestran que con listas más extensas fuerza bruta deja de ser una buena opción. Antes de usarlo en un sistema real también haría una prueba con un volumen cercano al esperado.
