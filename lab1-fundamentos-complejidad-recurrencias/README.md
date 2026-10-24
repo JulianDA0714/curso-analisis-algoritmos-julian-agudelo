@@ -6,10 +6,24 @@
 
 El laboratorio está dentro de la carpeta `lab1-fundamentos-complejidad-recurrencias`
 
-Primero se activa el entorno virtual desde la raíz del repositorio
+Primero se activa el entorno virtual desde la raíz del repositorio.
+
+En Windows con Git Bash:
 
 ```bash
 source venv/Scripts/activate
+```
+
+En Windows con PowerShell:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+En macOS o Linux:
+
+```bash
+source venv/bin/activate
 ```
 
 Después se entra a la carpeta del laboratorio
@@ -50,7 +64,7 @@ Duplicar la velocidad del servidor puede ayudar a que el proceso tarde menos, pe
 
 Por eso antes de gastar en hardware revisaría primero el algoritmo. Si el problema está en la forma como crece el tiempo de ejecución, lo más lógico es mirar esa parte primero y después pensar si todavía hace falta más capacidad de servidor
 
-Un ejemplo parecido podría ser una tienda que tiene que organizar **500.000 pedidos** antes de las 6:00 a. m. para preparar las entregas del día. Supongamos que el algoritmo ordena los pedidos correctamente pero tarda más de la ventana disponible. El resultado sería correcto, pero el sistema no sería viable para esa operación porque no alcanzaría a terminar a tiempo
+Un caso real que conocí en mi trabajo fue una consulta SQL del CORE financiero, relacionada con la información de facturación. En una revisión se observó que la consulta `retrieveLoanInvoiceDataListByTransactionId` podía tardar alrededor de **27 segundos por transacción**. Aunque devolvía los datos esperados, ese tiempo era un problema cuando el proceso necesitaba consultar varias transacciones. La restricción era obtener la información a tiempo para que el proceso operativo pudiera continuar, no solamente que el resultado fuera correcto. Por eso era importante revisar cómo se ejecutaba la consulta y sus posibilidades de optimización antes de pensar solamente en aumentar los recursos del servidor. No estoy afirmando que el problema ya se haya solucionado ni que se procesara una cantidad específica de transacciones.
 
 ---
 
@@ -68,7 +82,7 @@ Un primer problema sería que un paciente con un índice de riesgo alto no quede
 
 Otro problema puede caer sobre las personas que trabajan en el centro de contacto. Si la lista queda incompleta o desordenada, los operadores pueden tener que revisar información por otros medios o trabajar con una lista que no está lista para usar. Ahí el costo lo asume el operador y también la Secretaría porque el proceso de atención se vuelve más complicado
 
-Además hay algo que hace que este caso sea un poco más delicado. El orden no se usa solamente para organizar información. El orden decide a quién se contacta primero. Entonces el algoritmo debe respetar realmente el índice de riesgo porque una persona con mayor riesgo debería conservar esa prioridad en la lista
+Además hay algo que hace que este caso sea un poco más delicado. El orden no se usa solamente para organizar información. El orden decide a quién se contacta primero. Entonces el algoritmo debe respetar realmente el índice de riesgo porque una persona con mayor riesgo debería conservar esa prioridad en la lista. Esto impone una obligación adicional de corrección: además de terminar a tiempo, hay que comprobar que **no quede un paciente con mayor índice de riesgo detrás de otro con menor índice**. Una lista completa pero mal ordenada tampoco sería un resultado correcto para este proceso.
 
 ---
 
@@ -80,7 +94,7 @@ El **mejor caso** es la entrada que para un tamaño determinado hace que el algo
 
 El **peor caso** es la entrada que para ese mismo tamaño hace que el algoritmo trabaje lo máximo posible
 
-El **caso promedio** busca representar lo que normalmente puede pasar si se consideran las diferentes entradas posibles de ese tamaño
+El **caso promedio** considera el costo sobre las diferentes entradas posibles de un mismo tamaño. Para una lista con elementos distintos, se puede definir promediando sobre **todas las permutaciones** de esos elementos, si se supone que cada una tiene la misma probabilidad. El escenario aleatorio del laboratorio es una aproximación experimental, no un cálculo exacto de ese promedio
 
 En este punto el tamaño debe mantenerse fijo. Por ejemplo si estoy mirando entradas de 1.000 elementos, comparo entre las posibles entradas de esos mismos 1.000 elementos. No sería correcto comparar una entrada de 100 elementos con otra de 1.000 y decir que una es el mejor caso solamente por tener menos datos
 
@@ -106,7 +120,7 @@ Se probaron siete tamaños de entrada
 
 **100, 200, 400, 800, 1600, 3200 y 6400 elementos**
 
-El tiempo se tomó solamente durante la ejecución del algoritmo usando `time.perf_counter()`. La generación de los datos se hizo antes de empezar a medir
+El tiempo se tomó solamente durante la ejecución del algoritmo usando `time.perf_counter()`. La generación de los datos se hizo antes de empezar a medir. Cada tiempo corresponde al **promedio de cinco ejecuciones** con `time.perf_counter()`. Las comparaciones se cuentan dentro del algoritmo; para cada tamaño se utiliza la misma entrada en las cinco repeticiones.
 
 ### Comparaciones
 
@@ -126,13 +140,13 @@ El tiempo se tomó solamente durante la ejecución del algoritmo usando `time.pe
 
 | Tamaño | Aleatorio (s) | Casi ordenado (s) | Inverso (s) |
 |---:|---:|---:|---:|
-| 100 | 0,000227 | 0,000011 | 0,000418 |
-| 200 | 0,000919 | 0,000019 | 0,001661 |
-| 400 | 0,003640 | 0,000045 | 0,006707 |
-| 800 | 0,015132 | 0,000097 | 0,028311 |
-| 1.600 | 0,062131 | 0,000209 | 0,116049 |
-| 3.200 | 0,243449 | 0,000472 | 0,472831 |
-| 6.400 | 0,981710 | 0,001110 | 2,009349 |
+| 100 | 0,000284 | 0,000009 | 0,000424 |
+| 200 | 0,000850 | 0,000019 | 0,001757 |
+| 400 | 0,003769 | 0,000044 | 0,006978 |
+| 800 | 0,016813 | 0,000095 | 0,029012 |
+| 1.600 | 0,063159 | 0,000206 | 0,119634 |
+| 3.200 | 0,251765 | 0,000452 | 0,535610 |
+| 6.400 | 1,012051 | 0,001076 | 1,935171 |
 
 ![Tiempo de Insertion Sort](graficas/parte3_tiempo.png)
 
@@ -147,6 +161,8 @@ El escenario C fue todo lo contrario. Tuvo la mayor cantidad de comparaciones y 
 Entonces para el orden de mayor a menor que se escogió en este laboratorio, el escenario C representa el peor caso
 
 El escenario A quedó entre los dos. Por eso se puede tomar como una aproximación al caso promedio
+
+En la gráfica de tiempo, las curvas se ven casi pegadas al comienzo porque las diferencias son de fracciones de milisegundo y el eje vertical también debe representar los tiempos mucho mayores del escenario inverso. Cuando crece el tamaño, la curva inversa sube con más fuerza hasta acercarse a **1,94 segundos** con 6.400 datos, la aleatoria llega a **1,01 segundos** y la casi ordenada permanece cerca del eje horizontal, con apenas **0,001076 segundos**.
 
 Algo que se nota bastante en la gráfica es como el tiempo empieza a crecer rápido cuando aumenta la cantidad de datos. En el escenario inverso se pasa de **5.118.400 comparaciones con 3.200 elementos** a **20.476.800 con 6.400 elementos**. Es decir, al duplicar el tamaño las comparaciones aumentan aproximadamente cuatro veces
 
@@ -170,42 +186,29 @@ Después viene la parte de mezclar las dos listas. Como para hacer esa mezcla ha
 
 Para resolver la recurrencia usé el **árbol de recurrencia**
 
-Se puede ver más o menos así
+El árbol muestra cuánto cuesta mezclar en cada nivel. Para simplificar, supongo que `n` es una potencia de 2; si no lo es, el resultado asintótico se mantiene.
 
 ```text
-                         T(n)
-                       /      \
-                  T(n/2)     T(n/2)
-                  /   \       /   \
-             T(n/4) T(n/4) T(n/4) T(n/4)
-                 ...           ...
+Nivel 0:                T(n)                     costo total: c·n
+                       /    \nNivel 1:           T(n/2)   T(n/2)               2·c(n/2) = c·n
+                   /  \      /  \
+Nivel 2:        T(n/4) ... T(n/4)               4·c(n/4) = c·n
+                   ...       ...
+Nivel k:       n subproblemas T(1)               costo total: Θ(n)
 ```
 
-En el primer nivel se tiene un costo de `Θ(n)`
+En el nivel `i` hay `2^i` subproblemas de tamaño `n/2^i`, de modo que el trabajo de mezcla de ese nivel suma `2^i · c(n/2^i) = c·n`. Se puede dividir hasta llegar a subproblemas de tamaño 1: `n/2^k = 1`, por lo que `k = log₂(n)`.
 
-En el siguiente nivel hay más problemas pero entre todos siguen teniendo `n` elementos. Por eso el costo total de ese nivel también es `Θ(n)`
-
-Esto sigue pasando en los demás niveles
-
-La cantidad de niveles depende de cuántas veces se puede dividir `n` entre 2 hasta llegar a 1
+Hay aproximadamente `log₂(n)` niveles de mezcla, cada uno con costo `Θ(n)`, más `n` casos base de costo constante. La suma explícita es:
 
 ```text
-log₂(n)
+T(n) = c·n + c·n + ... + c·n + Θ(n)
+       └── log₂(n) niveles ──┘
+     = c·n·log₂(n) + Θ(n)
+     = Θ(n log n)
 ```
 
-Entonces el costo queda como
-
-```text
-Θ(n) + Θ(n) + Θ(n) + ... 
-```
-
-durante aproximadamente `log₂(n)` niveles
-
-Por eso
-
-```text
-T(n) = Θ(n log n)
-```
+Por eso **Merge Sort tiene complejidad Θ(n log n)**
 
 y la cota de Merge Sort es
 
@@ -215,45 +218,49 @@ O(n log n)
 
 ### Insertion Sort línea por línea
 
-En Insertion Sort la situación cambia bastante según como venga la lista
+Para contar las ejecuciones uso la implementación real de [`algoritmos.py`](algoritmos.py), que ordena de mayor a menor. Este es el bloque relevante, numerado para explicar cada instrucción:
 
-En el mejor caso la lista ya viene en el orden que necesitamos. En ese caso cada elemento se compara una vez con el elemento anterior para verificar que ya está donde debe. Como esto se hace para los `n - 1` elementos después del primero, el número de comparaciones es
-
-```text
-n - 1
+```python
+# 1  resultado = datos.copy()
+# 2  comparaciones = 0
+# 3  for i in range(1, len(resultado)):
+# 4      clave = resultado[i]
+# 5      j = i - 1
+# 6      while j >= 0:
+# 7          comparaciones += 1
+# 8          if resultado[j] < clave:
+# 9              resultado[j + 1] = resultado[j]
+# 10             j -= 1
+# 11         else: break
+# 12     resultado[j + 1] = clave
+# 13 return resultado, comparaciones
 ```
 
-Entonces el crecimiento es
+La línea 3 tiene `n-1` iteraciones (más la comprobación final del ciclo). Las líneas 4, 5 y 12 se ejecutan `n-1` veces, y las líneas 1, 2 y 13 una vez cada una. El número de ejecuciones del cuerpo del `while` cambia según la entrada:
 
-```text
-O(n)
-```
+| Línea u operación | Mejor caso (ya descendente) | Peor caso (ascendente) |
+|---|---:|---:|
+| 1: copiar la lista | 1 | 1 |
+| 2: inicializar contador | 1 | 1 |
+| 3: iteraciones del `for` | n − 1 | n − 1 |
+| 4: guardar `clave` | n − 1 | n − 1 |
+| 5: asignar `j` | n − 1 | n − 1 |
+| 6: evaluar `j >= 0` | 2(n − 1) | (n − 1)(n + 2)/2 |
+| 7: aumentar contador | n − 1 | n(n − 1)/2 |
+| 8: comparar elementos | n − 1 | n(n − 1)/2 |
+| 9: desplazar elemento | 0 | n(n − 1)/2 |
+| 10: decrementar `j` | 0 | n(n − 1)/2 |
+| 11: ejecutar `break` | n − 1 | 0 |
+| 12: insertar `clave` | n − 1 | n − 1 |
+| 13: retornar | 1 | 1 |
 
-En el peor caso la lista viene completamente al contrario. En ese caso el segundo elemento se compara una vez, el tercero dos veces, el cuarto tres veces y así sucesivamente
+En el **mejor caso**, el `while` compara una vez y sale por `break` en cada vuelta del `for`. Sumando las ejecuciones indicadas en la tabla (sin contar aparte la comprobación final del `for`) se obtiene `3 + 9(n − 1) = 9n − 6`, que crece como **Θ(n)**.
 
-La cantidad de comparaciones queda
+En el **peor caso**, para cada `i` el `while` desplaza `i` elementos. Por eso las líneas 7, 8, 9 y 10 se ejecutan `1 + 2 + ... + (n − 1) = n(n − 1)/2` veces cada una. La línea 6 se evalúa una vez adicional para salir del ciclo en cada iteración exterior. La suma de la tabla es `3 + 5(n − 1) + (n − 1)(n + 2)/2 + 4n(n − 1)/2`, es decir, **Θ(n²)**.
 
-```text
-1 + 2 + 3 + ... + (n - 1)
-```
+En el caso promedio, considerando las permutaciones de una lista de valores distintos con la misma probabilidad, los desplazamientos también crecen cuadráticamente: **Θ(n²)**.
 
-La suma es
-
-```text
-n(n - 1) / 2
-```
-
-Al mirar solamente el término que más crece, queda
-
-```text
-O(n²)
-```
-
-En el caso promedio el comportamiento también es cuadrático porque en promedio los elementos todavía tienen que desplazarse una cantidad importante de posiciones
-
-```text
-O(n²)
-```
+> El conteo anterior trata la copia de la lista como una instrucción ejecutada una vez; copiar sus `n` elementos cuesta realmente Θ(n), lo cual no cambia ninguna de las cotas finales.
 
 ### Tabla de complejidades
 
@@ -266,7 +273,7 @@ O(n²)
 
 ## 4.2 Validación con las pruebas
 
-Para esta parte comparé Insertion Sort y Merge Sort usando el escenario A, con los mismos tamaños de la Parte 3
+Para esta parte comparé Insertion Sort y Merge Sort usando el escenario A, con los mismos tamaños de la Parte 3. **Los tiempos corresponden al promedio de cinco ejecuciones por tamaño**, usando la misma lista aleatoria para ambos algoritmos. La generación de datos no se incluye en el tiempo medido.
 
 El código utilizado para esta comparación está en [`parte4_complejidad.py`](parte4_complejidad.py)
 
@@ -274,23 +281,23 @@ La implementación de los algoritmos se encuentra en [`algoritmos.py`](algoritmo
 
 | Tamaño | Insertion Sort (s) | Merge Sort (s) |
 |---:|---:|---:|
-| 100 | 0,000233 | 0,000156 |
-| 200 | 0,000914 | 0,000321 |
-| 400 | 0,003636 | 0,000706 |
-| 800 | 0,016003 | 0,001544 |
-| 1.600 | 0,061355 | 0,003345 |
-| 3.200 | 0,242737 | 0,007049 |
-| 6.400 | 0,983318 | 0,014816 |
+| 100 | 0,000231 | 0,000141 |
+| 200 | 0,000859 | 0,000308 |
+| 400 | 0,003539 | 0,000683 |
+| 800 | 0,015540 | 0,001562 |
+| 1.600 | 0,070713 | 0,003312 |
+| 3.200 | 0,246888 | 0,006966 |
+| 6.400 | 0,970828 | 0,014821 |
 
 ![Comparación de tiempos entre Insertion Sort y Merge Sort](graficas/parte4_tiempo.png)
 
-En las pruebas Merge Sort fue más rápido que Insertion Sort en todos los tamaños
+En la gráfica actualizada, Merge Sort permanece cerca del eje horizontal mientras la curva de Insertion Sort sube cada vez más, especialmente en los tamaños grandes. En tamaños pequeños ambas curvas se ven cercanas porque los tiempos son muy bajos en la escala usada. En estas pruebas Merge Sort fue más rápido que Insertion Sort en todos los tamaños
 
-Lo que más se nota es como la diferencia va aumentando cuando también aumenta el tamaño de la entrada. Con **6.400 elementos** Insertion Sort tardó **0,983318 segundos**, mientras que Merge Sort tardó **0,014816 segundos**
+Lo que más se nota es como la diferencia va aumentando cuando también aumenta el tamaño de la entrada. Con **6.400 elementos** Insertion Sort tardó **0,970828 segundos**, mientras que Merge Sort tardó **0,014821 segundos**
 
 Esto coincide con lo que salió en el análisis teórico. Insertion Sort tiene un crecimiento `O(n²)` para el caso promedio mientras que Merge Sort tiene `O(n log n)`
 
-En tamaños pequeños puede pasar que las diferencias no sean tan grandes. Merge Sort también tiene algunos costos como las llamadas recursivas y la creación de listas para hacer la mezcla. Pero cuando el tamaño empieza a crecer se nota como el comportamiento de Merge Sort es mucho más favorable
+En tamaños pequeños las curvas parecen casi juntas por la escala del eje vertical, aunque Merge Sort ya es más rápido en las mediciones. También tiene costos de llamadas recursivas y creación de listas. Al llegar a 6.400 elementos, Insertion Sort tarda unas **65,5 veces** más que Merge Sort. Al duplicar de 3.200 a 6.400, Merge Sort pasa de **0,006966** a **0,014821 segundos**, un factor medido de **2,13**; para `n log₂(n)` el factor teórico es aproximadamente **2,17**. La pequeña diferencia es esperable porque los tiempos reales fluctúan.
 
 ---
 
@@ -302,21 +309,21 @@ La decisión la tomo pensando principalmente en que el canal de entrada puede ca
 
 Insertion Sort tiene un comportamiento muy bueno cuando los datos están casi ordenados. El problema es que cuando llegan aleatorios o en orden inverso el tiempo aumenta bastante
 
-Esto se puede ver en las mediciones. Con **6.400 elementos** y el escenario A, Insertion Sort tardó **0,983318 segundos** mientras que Merge Sort tardó **0,014816 segundos**. Como el tamaño aumenta la diferencia también se vuelve más grande
+Esto se puede ver en las mediciones. Con **6.400 elementos** y el escenario A, Insertion Sort tardó **0,970828 segundos** mientras que Merge Sort tardó **0,014821 segundos**. Como el tamaño aumenta la diferencia también se vuelve más grande
 
 Para los **1.200.000 registros** no se hizo una medición directa. Por eso los valores que siguen son una **estimación** basada en las pruebas realizadas
 
-Para Insertion Sort se tomó el tiempo de **0,983318 segundos** con 6.400 elementos y se utilizó el comportamiento cuadrático que mostró el algoritmo. Pasar de 6.400 a 1.200.000 elementos significa aumentar el tamaño unas **187,5 veces**. Si el tiempo crece aproximadamente con el cuadrado de ese factor, el resultado queda cerca de **9,6 horas**
+Para Insertion Sort se tomó el tiempo de **0,970828 segundos** con 6.400 elementos y se utilizó el comportamiento cuadrático que mostró el algoritmo. Pasar de 6.400 a 1.200.000 elementos significa aumentar el tamaño unas **187,5 veces**. Si el tiempo crece aproximadamente con el cuadrado de ese factor, el resultado queda cerca de **9,5 horas**
 
-Para el escenario inverso la estimación es todavía mayor. Tomando los **2,009349 segundos** medidos con 6.400 elementos, el tiempo estimado para 1.200.000 registros sería aproximadamente **19,6 horas**
+Para el escenario inverso la estimación es todavía mayor. Tomando los **1,935171 segundos** medidos con 6.400 elementos, el tiempo estimado para 1.200.000 registros sería aproximadamente **18,9 horas**
 
 Estos valores no son mediciones directas. Son estimaciones hechas a partir de la forma de crecimiento observada
 
-Para Merge Sort se tomó como referencia el tiempo de **0,014816 segundos** con 6.400 elementos y se utilizó el crecimiento `n log n`. Con esta aproximación el tiempo para 1.200.000 elementos queda cerca de **4,4 segundos**. Nuevamente esto es una estimación y no una ejecución real con 1.200.000 registros
+Para Merge Sort se tomó como referencia el tiempo de **0,014821 segundos** con 6.400 elementos y se utilizó el crecimiento `n log n`. Con esta aproximación el tiempo para 1.200.000 elementos queda cerca de **4,44 segundos**. Nuevamente esto es una estimación y no una ejecución real con 1.200.000 registros
 
 Con estos resultados no veo suficiente la propuesta de simplemente comprar un servidor con el doble de velocidad
 
-Por ejemplo, si se toma la estimación de **9,6 horas** para Insertion Sort y se supone que un servidor del doble de velocidad reduce el tiempo exactamente a la mitad, todavía quedarían unas **4,8 horas**. Eso sigue estando por encima de las **4 horas** que tiene Tamiza
+Por ejemplo, si se toma la estimación de **9,5 horas** para Insertion Sort y se supone que un servidor del doble de velocidad reduce el tiempo exactamente a la mitad, todavía quedarían unas **4,75 horas**. Eso sigue estando por encima de las **4 horas** que tiene Tamiza
 
 Entonces el cambio de hardware podría ayudar pero no soluciona de fondo el crecimiento del algoritmo
 
@@ -325,3 +332,8 @@ Hay otro punto que también se debe tener en cuenta y es la memoria. Merge Sort 
 También me parece importante que Merge Sort sea una opción más estable frente a los diferentes escenarios. Como no depende de que la lista llegue casi ordenada, el cambio en el canal de entrada no afecta de la misma manera su comportamiento
 
 Por todo esto la recomendación es utilizar **Merge Sort** y hacer una prueba final con una cantidad de datos cercana a los **1.200.000 registros** antes de llevar el cambio a producción. Así se podría comprobar directamente el consumo de memoria y el tiempo real del proceso en un ambiente controlado
+
+
+---
+
+**Actualización para recalificación:** mediciones repetidas cinco veces por tamaño, tablas actualizadas con los resultados obtenidos y gráficas regeneradas con los promedios.
