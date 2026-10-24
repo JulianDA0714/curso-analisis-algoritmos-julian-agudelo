@@ -96,7 +96,7 @@ El tiempo se tomó con `time.perf_counter()` solamente durante la ejecución de 
 
 ## 3.1 Recurrencia y complejidad
 
-En divide y vencerás se crean dos subproblemas de aproximadamente la mitad del tamaño. Además, hay que revisar el tramo que cruza el punto medio. Como para encontrarlo se recorren las dos mitades, ese paso cuesta `Θ(n)`.
+En divide y vencerás la lista se parte por el punto medio: una llamada recursiva trabaja con la mitad izquierda y otra con la derecha. Por eso se crean dos subproblemas de tamaño aproximado `n/2` cada uno. Además, hay que revisar el tramo que cruza el punto medio. Como para encontrarlo se recorren las dos mitades, ese paso cuesta `Θ(n)`.
 
 La recurrencia queda así:
 
@@ -110,17 +110,17 @@ En fuerza bruta se usan dos ciclos: uno escoge el inicio del tramo y el otro rec
 
 ## 3.2 Lo medido frente a lo esperado
 
-En la gráfica se nota que fuerza bruta empieza a crecer mucho más rápido. Divide y vencerás también aumenta su tiempo, pero la diferencia entre los dos se vuelve cada vez mayor.
+En la gráfica se ve que la curva de fuerza bruta sube cada vez más y llega a casi **2 segundos** con 8.000 elementos. En cambio, la curva de divide y vencerás permanece muy cerca del eje horizontal porque en ese tamaño solo tarda **0,014414 segundos**. Por eso las dos curvas se separan tanto a medida que aumenta `n`.
 
 Por ejemplo, al pasar de **4.000 a 8.000 elementos**, fuerza bruta pasó de **0,401170** a **1,973235 segundos**. Eso significa que tardó unas **4,92 veces** más.
 
 En divide y vencerás se pasó de **0,007020** a **0,014414 segundos**, aproximadamente **2,05 veces** más.
 
-Esto mantiene la tendencia esperada: fuerza bruta crece mucho más rápido por su `Θ(n²)`, mientras que divide y vencerás queda cerca de duplicar su tiempo, como se espera de `Θ(n log n)`. Los valores no tienen que dar exactamente el factor teórico porque son tiempos medidos y pueden variar según la ejecución y el equipo.
+Teóricamente, al duplicar `n`, el factor para `n²` es **4**. Para `n log₂ n`, entre 4.000 y 8.000 elementos, el factor es aproximadamente **2,17**. En mis mediciones salieron **4,92** y **2,05**, respectivamente. El segundo quedó algo más cerca de 2 que de 2,17; esto puede pasar por las variaciones de tiempo al ejecutar Python y por los costos fijos que no aparecen en la expresión teórica. Aun así, la diferencia de crecimiento entre ambos algoritmos se ve claramente.
 
 ## 3.3 Tamaños pequeños
 
-En mis pruebas divide y vencerás empezó a mostrar ventaja desde los **50 elementos**, aunque en ese tamaño los tiempos todavía fueron prácticamente iguales: **0,000068 segundos** para fuerza bruta y **0,000065 segundos** para divide y vencerás.
+Con **50 elementos** los tiempos fueron prácticamente iguales: **0,000068 segundos** para fuerza bruta y **0,000065 segundos** para divide y vencerás. No tomaría esa diferencia tan pequeña como una ventaja clara. **A partir de 100 elementos** sí se empieza a notar mejor: fuerza bruta tardó **0,000238 segundos** y divide y vencerás **0,000138 segundos**.
 
 Con 10 elementos fuerza bruta fue más rápida. Esto puede pasar porque dividir la lista y hacer llamadas recursivas también tiene un costo. En listas pequeñas ese trabajo adicional puede pesar más que la diferencia de complejidad, pero cuando aumenta la cantidad de datos la ventaja de divide y vencerás se hace mucho más clara.
 
