@@ -1,59 +1,60 @@
 # Laboratorio evaluativo 03 — Estructuras de datos
 
 **Estudiante:** Julián David Agudelo Acevedo  
-**Curso:** Análisis de Algoritmos
+**Curso:** Análisis de algoritmos
 
-## 1. Objetivo
+## Cómo ejecutar el laboratorio
 
-Comparar el tiempo de búsqueda de guías de envío en una lista
-enlazada y una tabla hash con encadenamiento. También se estudia
-cómo afecta el factor de carga y cuándo sería útil un árbol de
-búsqueda binario.
+Desde la carpeta principal del repositorio, activar el entorno virtual que venimos usando en el curso:
 
-## 2. Implementación y pruebas
+**Windows (PowerShell):**
 
-En `estructuras.py` se implementaron las clases `Nodo`,
-`ListaEnlazada` y `TablaHash`.
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-La lista inserta al inicio y busca recorriendo los nodos.
-La tabla utiliza `guia % m` y almacena las colisiones en listas
-enlazadas.
+**macOS o Linux:**
 
-En `pruebas.py` se verificaron búsquedas exitosas e
-inexistentes, colisiones forzadas con las guías 10, 24 y 17
-en una tabla de 7 casillas, y 20 colecciones aleatorias.
+```bash
+source .venv/bin/activate
+```
 
-Las pruebas terminaron correctamente y los archivos pasaron
-la revisión de estilo PEP 8.
+Si el entorno todavía no existe, crearlo con `python -m venv .venv`. Instalar las dependencias desde la raíz del repositorio:
 
-## 3. Cómo ejecutar
+```bash
+python -m pip install -r requirements.txt
+python -m pip install pycodestyle
+```
 
-Desde la carpeta `lab3-estructuras-datos`:
+Después entrar a `lab3-estructuras-datos` y ejecutar:
 
 ```bash
 python pruebas.py
 python medicion.py
-```
-
-Para verificar el estilo:
-
-```bash
 python -m pycodestyle estructuras.py pruebas.py medicion.py
 ```
 
-Las dependencias utilizadas para las gráficas son `matplotlib`
-y las herramientas indicadas en el repositorio del curso.
+El archivo `medicion.py` vuelve a generar las dos gráficas. Los tiempos pueden variar un poco dependiendo del equipo y de lo que esté ejecutando al mismo tiempo.
 
-## 4. Mediciones
+## Parte 1 — Implementación y pruebas
 
-Se realizaron 200 búsquedas de guías inexistentes por prueba,
-con tres repeticiones y semillas fijas. Se utilizó
-`time.perf_counter()` para medir únicamente las búsquedas,
-sin incluir la construcción de las estructuras.
+**Código:** [estructuras.py](estructuras.py) | [pruebas.py](pruebas.py)
 
-### Experimento A: comparación por tamaño
+La idea era comparar una lista enlazada con una tabla hash para buscar guías de una empresa de envíos. En `estructuras.py` hice las clases `Nodo`, `ListaEnlazada` y `TablaHash`. La lista agrega las guías al inicio y para buscar recorre sus nodos. La tabla calcula la casilla con `guia % m` y, cuando varias guías caen en la misma, las guarda en una lista enlazada.
 
-| n | m | α | Lista (ms) | Hash (ms) |
+En las pruebas revisé búsquedas que sí encuentran una guía y otras que no, la colisión de las guías 10, 24 y 17 con siete casillas, el factor de carga y 20 colecciones aleatorias. También comparé las respuestas de ambas estructuras. Todas las pruebas pasaron y el código pasó la revisión de PEP 8.
+
+## Parte 2 — Mediciones y gráficas
+
+**Código:** [medicion.py](medicion.py)
+
+Para medir utilicé `time.perf_counter()`. En cada caso hice 200 búsquedas de guías inexistentes y repetí la medición tres veces para sacar el promedio. Usé semillas fijas para poder repetir los experimentos. El tiempo de crear las estructuras y generar las guías no se incluyó en la medición.
+
+### Experimento A — Lista frente a tabla hash
+
+Para cada cantidad de guías usé una tabla con un número primo de casillas cercano a `n / 2`, buscando que el factor de carga quedara alrededor de 2.
+
+| Guías (n) | Casillas (m) | α | Lista (ms) | Tabla hash (ms) |
 |---:|---:|---:|---:|---:|
 | 100 | 53 | 1.887 | 0.004058 | 0.000223 |
 | 500 | 251 | 1.992 | 0.019060 | 0.000258 |
@@ -62,102 +63,59 @@ sin incluir la construcción de las estructuras.
 | 20000 | 10007 | 1.999 | 0.776075 | 0.000322 |
 | 50000 | 25013 | 1.999 | 2.325159 | 0.000325 |
 
-![Lista enlazada frente a tabla hash](graficas/lista_vs_tabla.png)
+![Comparación del tiempo de búsqueda entre lista y tabla hash](graficas/lista_vs_tabla.png)
 
-### Experimento B: factor de carga
+La curva de la tabla casi no se distingue del eje horizontal porque sus tiempos son mucho menores que los de la lista. Por eso también dejé los valores exactos en la tabla.
 
-Se mantuvieron 20.000 guías y se modificó el número de casillas.
+### Experimento B — Efecto del factor de carga
 
-| m | α | Tiempo hash (ms) |
+En este caso dejé fijas 20.000 guías y cambié la cantidad de casillas para observar qué pasaba con las colisiones.
+
+| Casillas (m) | α | Tabla hash (ms) |
 |---:|---:|---:|
 | 40009 | 0.500 | 0.000259 |
 | 20011 | 0.999 | 0.000299 |
 | 5003 | 3.998 | 0.000386 |
 | 2003 | 9.985 | 0.000907 |
 
-![Tiempo según factor de carga](graficas/tiempo_vs_alfa.png)
+![Tiempo de búsqueda según el factor de carga](graficas/tiempo_vs_alfa.png)
 
-## 5. Análisis
+## Parte 3 — Análisis
 
-### 1. Complejidad de una búsqueda inexistente
+### 1. ¿Por qué cambia el costo de búsqueda?
 
-En la lista enlazada, cuando una guía no existe, hay que
-recorrer todos los nodos para comprobarlo. Por eso su costo
-es Θ(n).
+En una lista enlazada, si una guía no existe, toca revisar todos los nodos para estar seguros. Por eso el tiempo crece con la cantidad de guías y se representa como Θ(n).
 
-En la tabla hash primero se calcula la casilla y después
-se recorre solamente su cadena. Si las guías se distribuyen
-uniformemente, el costo esperado es Θ(1 + α), donde
-α = n / m. En el peor caso, si todas las guías colisionan,
-también puede llegar a Θ(n).
+Con la tabla hash primero calculamos en qué casilla buscar y después revisamos únicamente esa lista. Si las guías quedan bien repartidas entre las casillas, el costo esperado es Θ(1 + α), siendo α la cantidad de guías dividida por las casillas. Esto depende de que la función hash distribuya las claves de manera más o menos uniforme. Si todas terminaran en la misma casilla, volveríamos a recorrer una lista grande y el peor caso sería Θ(n).
 
-### 2. Relación entre teoría y mediciones
+### 2. ¿Qué muestran los tiempos frente a la teoría?
 
-En la primera gráfica se observa que la lista enlazada
-aumenta su tiempo conforme crece n, mientras que la tabla
-hash se mantiene casi horizontal.
+En la primera gráfica la lista va aumentando bastante, mientras que la tabla hash se mantiene casi plana. Entre 1.000 y 5.000 guías, la cantidad de datos se multiplicó por 5 y el tiempo de la lista pasó de 0,038760 a 0,195986 ms, unas 5,06 veces. Eso se parece al crecimiento lineal que esperábamos.
 
-De 1.000 a 5.000 guías, n se multiplica por 5 y el tiempo
-de la lista aumenta aproximadamente 5,06 veces. Esto se
-acerca al crecimiento lineal esperado. En cambio, el tiempo
-de la tabla cambia de 0,000322 a 0,000305 ms, una variación
-pequeña porque α permanece cercano a 2.
+En la tabla hash, para esos mismos tamaños, el tiempo pasó de 0,000322 a 0,000305 ms, unas 0,95 veces. El tiempo prácticamente se mantuvo igual porque el factor de carga siguió cerca de 2. Esto era lo que esperábamos según la teoría.
 
-En la segunda gráfica, al aumentar α de 0,500 a 9,985,
-el tiempo pasa de 0,000259 a 0,000907 ms. Esto muestra
-que las cadenas más largas pueden aumentar el costo de
-búsqueda. Los tiempos no siguen una proporción exacta
-porque también influyen los costos fijos y las variaciones
-de la medición.
+En la segunda gráfica, al subir α de 0,500 a 9,985, el tiempo aumentó de 0,000259 a 0,000907 ms, unas 3,50 veces. La expresión 1 + α aumentó aproximadamente 7,32 veces, pero eso no significa que el cronómetro deba dar exactamente ese factor: también hay operaciones fijas y pequeñas variaciones al medir. Lo importante es que con más guías por casilla las búsquedas se vuelven más lentas.
 
-### 3. Colisiones y métodos para resolverlas
+### 3. ¿Qué pasa cuando hay colisiones?
 
-Una colisión ocurre cuando dos claves diferentes producen
-la misma posición. Puede suceder incluso si hay más
-casillas que guías.
+Una colisión ocurre cuando dos guías diferentes terminan en la misma casilla. Puede pasar incluso si sobran espacios, porque la función hash no garantiza una casilla distinta para cada guía. Por ejemplo, con `m = 7`, las guías 10, 24 y 17 dan residuo 3.
 
-Por ejemplo, con m = 7, las claves 10, 24 y 17 producen
-el índice 3. En nuestra implementación se conservan las
-tres mediante encadenamiento.
+En el encadenamiento, como hicimos aquí, las tres se guardan en la lista de esa casilla. La ventaja es que se pueden seguir insertando guías aunque haya muchas colisiones; la desventaja es que se necesitan nodos adicionales y una cadena larga tarda más en recorrerse.
 
-El encadenamiento permite guardar varias claves por
-casilla, incluso cuando α supera 1, aunque necesita
-memoria adicional para los nodos. El direccionamiento
-abierto busca otra posición disponible dentro del arreglo,
-pero requiere controlar el sondeo, la ocupación y las
-eliminaciones.
+Con direccionamiento abierto no se crea otra lista, sino que se busca una casilla libre dentro del mismo arreglo siguiendo una secuencia de sondeo. La ventaja es que no necesitamos crear nodos adicionales, pero si la tabla empieza a llenarse, encontrar una casilla disponible puede tomar más tiempo.
 
-### 4. Consultas por rango y árboles binarios
+### 4. ¿Sirve la tabla hash para buscar rangos?
 
-La tabla hash sirve para encontrar una guía exacta, pero
-no mantiene las claves ordenadas. Para consultar todas las
-guías entre X y Y habría que revisar la tabla completa.
+Para buscar una guía exacta sí sirve, pero para pedir todas las guías entre X y Y no es tan útil porque no las mantiene ordenadas. Habría que revisar muchas casillas. Un árbol de búsqueda binario permite aprovechar el orden y consultar un rango en O(h + k), donde h es la altura del árbol y k son los resultados encontrados.
 
-Un árbol de búsqueda binario permite aprovechar el orden.
-Una consulta por rango puede costar O(h + k), donde h es
-la altura y k la cantidad de resultados.
+El problema es que un árbol común puede quedar desbalanceado. Si insertamos 400.000 guías ya ordenadas, quedaría prácticamente como una lista, con altura 399.999. Una búsqueda al final podría necesitar unas 400.000 comparaciones. Si contamos todas las comparaciones para construirlo de esa forma, serían aproximadamente 79.999.800.000.
 
-Sin embargo, si se insertan 400.000 claves ordenadas en
-un BST común, puede degenerar hasta una altura de 399.999.
-Un árbol balanceado mantiene una altura O(log n), cercana
-a 19 niveles para esa cantidad de guías.
+En un árbol equilibrado, la altura estaría cerca de 19 aristas y una búsqueda necesitaría alrededor de 19 o 20 comparaciones, no cientos de miles. Por eso, para consultar rangos, me parece mejor utilizar un árbol balanceado y evitar que termine funcionando como una lista.
 
-### 5. Recomendación para Rutas del Caribe
+### 5. ¿Qué le recomendaría a la empresa?
 
-Para las consultas por número exacto de guía utilizaría
-una tabla hash con encadenamiento, procurando mantener
-controlado el factor de carga.
+Para las consultas del call center usaría una tabla hash con encadenamiento, porque normalmente buscan una guía exacta. Para el supervisor, que necesita consultar rangos, la complementaría con un árbol balanceado. Así cada necesidad tendría una estructura adecuada.
 
-Si también se necesitan consultas frecuentes por rango,
-convendría complementarla con un árbol balanceado.
+Con 50.000 guías la lista tardó 2,325159 ms por búsqueda inexistente. Como la gráfica muestra un crecimiento aproximadamente lineal, pasar a 5.000.000 de guías (100 veces más) daría una estimación de unos 232,5 ms por búsqueda. No es una medición real, sino una proyección basada en esa tendencia.
 
-En el experimento A, la lista tardó 2,325159 ms por
-búsqueda con 50.000 guías. Si se extrapola su crecimiento
-lineal a 5 millones, el tiempo estimado sería unas 100
-veces mayor, aproximadamente 232,5 ms por búsqueda.
-
-En la tabla hash, el costo esperado podría mantenerse
-cercano al actual si el número de casillas creciera junto
-con las guías para conservar α alrededor de 2. Esta última
-comparación es una estimación teórica, no una medición
-real con 5 millones de registros.
+La tabla hash tardó 0,000325 ms con 50.000 guías y α cercano a 2. Si para 5.000.000 de guías aumentamos las casillas hasta aproximadamente 2.500.000 y las claves siguen bien distribuidas, el costo esperado podría seguir en el mismo orden, alrededor de 0,000325 ms. Igualmente, esto es una estimación y no significa que en la práctica vaya a dar exactamente ese tiempo, porque también depende del equipo y de otros factores.
