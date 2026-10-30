@@ -1,77 +1,75 @@
-# Retroalimentación — Laboratorio 01: Fundamentos, complejidad y recurrencias
+# Retroalimentación — Laboratorio 1: Fundamentos, complejidad y recurrencias
 
 **Estudiante:** Julián David Agudelo Acevedo · **Laboratorio:** Laboratorio evaluativo 01 — Fundamentos, complejidad y recurrencias
-**Fecha límite:** 2026-10-05 23:59 · **Versión revisada:** commit `4cc23cf`
+**Fecha límite:** 2026-10-30 23:59 · **Versión revisada:** commit `172116e`
+
+Muy buen trabajo: el informe está completo, ordenado y apoyado en sus propias mediciones.
 
 ## Nota
 
 | Criterio | Puntos |
 |---|---|
 | Corrección conceptual | 21 / 25 |
-| Calidad de la explicación teórica | 19 / 25 |
-| Corrección de la implementación | 12 / 20 |
+| Calidad de la explicación teórica | 23 / 25 |
+| Corrección de la implementación | 20 / 20 |
 | Calidad del análisis de las gráficas | 18 / 20 |
-| Documentación y organización del informe | 9 / 10 |
-| **Total** | **79 / 100** |
-| **Nota (0–5)** | **3.95** |
+| Documentación y organización del informe | 10 / 10 |
+| **Total** | **92 / 100** |
+| **Nota (0–5)** | **4.60** |
 
 ## 1. Corrección conceptual (21 / 25)
 **Lo que hizo bien:**
-- Separa bien "correcto" de "a tiempo" y nombra la ventana de 4 horas como la restricción que se incumple.
-- Explica que un servidor más rápido no cambia la forma en que crece el trabajo del algoritmo.
-- En la Parte 2 relaciona el tiempo con la energía acumulada día tras día y da dos perjuicios (el paciente y el operador), diciendo quién asume el costo.
-- Señala que el orden de la lista decide a quién se llama primero.
+- Separa con claridad que el algoritmo es correcto pero no cumple la ventana de 4 horas, y nombra esa restricción.
+- En la Parte 2 relaciona el tiempo de ejecución con el consumo de energía acumulado por correr todas las madrugadas durante años.
+- Identifica dos perjuicios concretos (el paciente de alto riesgo llamado tarde y el operador con una lista incompleta) y dice quién asume el costo de cada uno.
+- Discute bien la obligación extra de corrección: nadie con mayor riesgo debe quedar detrás de alguien con menor riesgo.
 
-**Lo que puede mejorar:**
-- El segundo ejemplo (500.000 pedidos) es hipotético ("supongamos"). Se pedía un sistema que usted use, conozca o haya programado, con sus datos y su restricción.
-- Falta la tensión sobre corrección: no dice qué obligación adicional impone que el orden sea exacto, más allá de decir que debe respetar el índice de riesgo.
+**Lo que puede mejorar (y cómo corregirlo):**
+- El segundo ejemplo propio (la consulta del sistema financiero) dice cuánto tardaba una consulta, pero no cuántos datos o transacciones se procesaban ni cuál era el límite de tiempo que se incumplía. Por eso queda un poco abstracto.
+  → *Cómo corregirlo:* agregue, aunque sea aproximado, cuántas transacciones o registros había que procesar y en cuánto tiempo debía terminar el proceso, para que se vea qué restricción concreta se rompía.
+- La explicación de por qué duplicar el servidor no resuelve el problema de fondo es correcta pero general ("puede ayudar al principio").
+  → *Cómo corregirlo:* explique qué pasa con el tiempo cuando el algoritmo sigue igual y los datos siguen creciendo, y por qué una máquina el doble de rápida solo cambia una constante y no la forma en que crece el tiempo.
 
-## 2. Calidad de la explicación teórica (19 / 25)
+## 2. Calidad de la explicación teórica (23 / 25)
 **Lo que hizo bien:**
-- Define mejor, peor y promedio con el tamaño fijo, elige el peor caso para decidir la producción y deja su predicción escrita antes de medir.
-- Plantea la recurrencia de merge sort explicando cada término y la resuelve con el árbol hasta `Θ(n log n)`.
-- Incluye la tabla de complejidades.
+- Define mejor, peor y caso promedio indicando sobre qué entradas se toma cada uno y con el tamaño fijo, y justifica que usaría el peor caso por la ventana estricta.
+- Deja escrita la predicción antes del experimento.
+- Plantea la recurrencia de merge sort explicando cada término, la resuelve con árbol de recursión mostrando el costo por nivel, el número de niveles y la suma final.
+- Cuenta línea a línea las ejecuciones de insertion sort en mejor y peor caso, y presenta la tabla de complejidades.
 
-**Lo que puede mejorar:**
-- El árbol es incompleto: no se ve el costo de cada nivel dibujado ni el total sumado (n por log n niveles) de forma explícita.
-- Insertion sort no se calculó línea a línea: debía indicar cuántas veces se ejecuta cada línea de su código y sumar. Usted contó solo comparaciones.
-- Al definir el caso promedio no dice sobre qué conjunto de entradas se promedia (todas las permutaciones).
+**Lo que puede mejorar (y cómo corregirlo):**
+- El caso promedio de insertion sort se afirma como cuadrático, pero no se muestra por qué.
+  → *Cómo corregirlo:* piense cuántos de los elementos anteriores, en promedio, tiene que recorrer cada elemento nuevo si el orden es aleatorio, y súmelo para todos los elementos.
+- En el dibujo del árbol, la fila del nivel 1 quedó mal escrita (aparece un `\n` suelto) y se pierde la forma del árbol.
+  → *Cómo corregirlo:* revise ese bloque de código del `README.md` y ponga cada nivel en su propia línea.
 
-## 3. Corrección de la implementación (12 / 20)
+## 3. Corrección de la implementación (20 / 20)
 **Lo que hizo bien:**
-- Ambos algoritmos ordenan bien, no cambian la lista recibida, cuentan comparaciones entre elementos y no usan `sorted()` ni `sort()`. Merge sort tiene su propia mezcla recursiva.
-- Los generadores dan listas de números distintos y el aleatorio usa semilla.
-
-**Lo que puede mejorar:**
-- Los docstrings no siguen el estilo Google (faltan las secciones `Args` y `Returns`) y los de `datos.py` tampoco describen los parámetros.
-- Las funciones de `parte3_casos.py` y `parte4_complejidad.py` no tienen docstring ni *type hints*.
-- Faltan líneas en blanco entre funciones (PEP 8).
+- `insertion_sort` y `merge_sort` ordenan de mayor a menor, devuelven una lista nueva sin cambiar la original y cuentan solo comparaciones entre elementos (para una lista ya en el orden pedido, insertion sort hace exactamente n − 1).
+- No usan `sorted()` ni `list.sort()`, y `merge_sort` tiene su propia mezcla recursiva.
+- Los tres generadores dan listas del tamaño pedido, con valores distintos y semilla reproducible.
+- Todas las funciones tienen *docstring* con `Args` y `Returns`, *type hints* y dos líneas en blanco entre funciones.
 
 ## 4. Calidad del análisis de las gráficas (18 / 20)
 **Lo que hizo bien:**
-- Las tres gráficas existen y tienen título, ejes con unidades, leyenda y las curvas en los mismos ejes.
-- Identifica con datos el peor caso (inverso), el mejor (casi ordenado) y el promedio (aleatorio), y lo contrasta con su predicción.
-- Concluye con la gráfica que merge sort conviene y lo relaciona con `O(n²)` y `O(n log n)`.
-- El concepto técnico recomienda merge sort, responde a la propuesta del servidor con un dato medido (9,6 h bajaría a unas 4,8 h) y declara la extrapolación como estimación. También habla de la memoria.
+- Las tres gráficas existen, tienen título, ejes rotulados y leyenda, y muestran las curvas pedidas en los mismos ejes.
+- Identifica con evidencia que el escenario C es el peor caso (unos 20,5 millones de comparaciones en n = 6400), el B el mejor y el A un aproximado del promedio, y contrasta con su predicción.
+- Concluye que merge sort conviene, describe lo que hace cada curva y lo conecta con O(n²) frente a O(n log n), con un chequeo numérico del factor al duplicar el tamaño.
+- Extrapola a 1.200.000 registros explicando el razonamiento y declarando que es una estimación, y muestra que ni con el servidor al doble de velocidad insertion sort cabría en las 4 horas.
+- Menciona la memoria adicional de merge sort como consideración distinta del tiempo.
 
-**Lo que puede mejorar:**
-- Los tiempos son de una sola corrida; repetir cada medición y promediar daría curvas más confiables.
-- No explica por qué las curvas se ven casi pegadas en tamaños pequeños.
+**Lo que puede mejorar (y cómo corregirlo):**
+- Al responder a la propuesta del servidor usa una estimación, pero no cita la gráfica ni el valor medido del que parte.
+  → *Cómo corregirlo:* nombre explícitamente la gráfica `parte4_tiempo.png` y el tamaño de entrada de donde toma el dato medido antes de pasar a la estimación.
+- Afirma que merge sort es "más estable" frente a los escenarios, pero no lo respalda con una medición propia (solo tiene mediciones de merge sort en el escenario A).
+  → *Cómo corregirlo:* mida merge sort también en los escenarios B y C y cite esos tiempos, o reformule la frase indicando que es una expectativa teórica.
 
-## 5. Documentación y organización del informe (9 / 10)
+## 5. Documentación y organización del informe (10 / 10)
 **Lo que hizo bien:**
-- Carpeta y archivos con los nombres correctos, README en el orden pedido, gráficas incrustadas con ruta que sí funciona y enlaces al código en cada parte.
-- Cinco commits que tocan el laboratorio, con mensajes claros.
-
-**Lo que puede mejorar:**
-- Las instrucciones activan el entorno con una ruta de Windows (`venv/Scripts`); conviene indicar también la de macOS/Linux.
+- Siguió la estructura de carpetas acordada y tiene todos los archivos del entregable.
+- El `README.md` tiene su nombre, instrucciones de reproducción y las partes en orden, con las gráficas incrustadas con rutas que funcionan.
+- Enlaza `parte3_casos.py`, `parte4_complejidad.py`, `algoritmos.py` y `datos.py` donde corresponde.
+- Tiene seis commits descriptivos sobre el laboratorio.
 
 ## ¿El código funciona?
-Sí. Los dos scripts corren sin errores, ordenan correctamente y generan las tres gráficas. Los resultados coinciden con lo que muestra su informe.
-
-## Para el próximo laboratorio
-- Escriba docstrings estilo Google (con `Args` y `Returns`) y *type hints* en todas las funciones, incluidas las de los scripts de medición.
-- Pase `pycodestyle` antes de entregar.
-- Cuando le pidan un cálculo línea a línea, anote cuántas veces se ejecuta cada línea y sume.
-- Use ejemplos reales y con cifras cuando se pida un caso propio.
-- Repita las mediciones de tiempo y grafique el promedio.
+Sí. Ambos algoritmos ordenan correctamente en pruebas con listas pequeñas y aleatorias, y los dos scripts corren sin errores y generan las gráficas.
